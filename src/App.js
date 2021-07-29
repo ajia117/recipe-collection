@@ -3,9 +3,9 @@ import React from 'react';
 import './App.css';
 
 class App extends React.Component {
-  constructor ({recipeState=false}) {
+  constructor({ recipeState = false }) {
     super();
-    
+
     this.state = {
       isAddRecipeFormDisplayed: recipeState,
       recipeBeingEdited: {
@@ -17,40 +17,38 @@ class App extends React.Component {
   }
 
   toggleAddRecipeForm = () => {
-    this.setState({isAddRecipeFormDisplayed: !this.state.isAddRecipeFormDisplayed})
+    this.setState({
+      isAddRecipeFormDisplayed: !this.state.isAddRecipeFormDisplayed,
+      recipeBeingEdited: {
+        name: '',
+        steps: ''
+      },
+      recipes: this.state.recipes
+    })
   }
 
   submitRecipe = (event) => {
-    console.log("submission is occurring: ", event)
-    console.log("submitRecipe recipes state: ", this.state.recipes)
-    this.setState((state) => {
-      console.log()
-      state.recipes.push(state.recipeBeingEdited)
-      state.recipeBeingEdited = {
-        name: '',
-        steps: ''
-      }
-      return state;
-    })
     event.preventDefault();
+    console.log("submission is occurring: ", event)
+    console.log("submitRecipe recipes state: ", this.state)
+    this.setState({
+      isAddRecipeFormDisplayed: this.state.isAddRecipeFormDisplayed,
+      recipeBeingEdited: this.state.recipeBeingEdited,
+      recipes: this.state.recipes.push(this.state.recipeBeingEdited)
+    })
+    console.log("afterRecipe recipes state: ", this.state)
+    this.toggleAddRecipeForm();
   }
-  handleName = (event) => {
 
-  }
-
-  handleSteps = (event) => {
-    
-  }
-  
   renderRecipes = () => {
-    console.log("renderRecipes recipes state: ", this.state.recipes)
-    if(this.state.recipes.length === 0) {
+    console.log("renderRecipes recipes state: ", this.state)
+    if (this.state.recipes.length === 0) {
       return <p>There are no recipes to list.</p>
     } else {
       return (
         <ul>
           {
-            this.state.recipes.map(({name, steps}) => (
+            this.state.recipes.map(({ name, steps }) => (
               <li key={name}>
                 <h2>{name}</h2>
                 <p>{steps}</p>
@@ -62,7 +60,7 @@ class App extends React.Component {
     }
   }
 
-  render(){
+  render() {
     const addNewRecipeForm = (
       <form id="recipe-form" onSubmit={this.submitRecipe}>
         <label htmlFor="newRecipeName">Recipe name: </label>
@@ -72,11 +70,11 @@ class App extends React.Component {
           id="newRecipeName"
           value={this.state.recipeBeingEdited.name}
           onChange={
-            (event) => this.setState((state)=> {
+            (event) => this.setState((state) => {
               state.recipeBeingEdited.name = event.target.value;
               return state;
             })
-          }/>
+          } />
         <label htmlFor="newRecipeInstructions">Instructions:</label>
         <textarea
           id="newRecipeInstructions"
@@ -84,12 +82,12 @@ class App extends React.Component {
           placeholder="write recipe instructions here..."
           value={this.state.recipeBeingEdited.steps}
           onChange={
-            (event) => this.setState((state)=> {
+            (event) => this.setState((state) => {
               state.recipeBeingEdited.steps = event.target.value;
               return state;
             })
-          }/>
-        <input type="submit" id="submit" data-testid="submit"/>
+          } />
+        <input type="submit" id="submit" data-testid="submit" />
       </form>
     )
 
@@ -98,8 +96,8 @@ class App extends React.Component {
         <h1 className="App-header">My Recipes</h1>
         {
           this.state.isAddRecipeFormDisplayed
-           ? addNewRecipeForm
-          : <button id="add-recipe" onClick={this.toggleAddRecipeForm}>Add Recipe</button>
+            ? addNewRecipeForm
+            : <button id="add-recipe" onClick={this.toggleAddRecipeForm}>Add Recipe</button>
 
         }
         {
