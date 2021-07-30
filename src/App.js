@@ -17,31 +17,33 @@ class App extends React.Component {
   }
 
   toggleAddRecipeForm = () => {
-    this.setState({
-      isAddRecipeFormDisplayed: !this.state.isAddRecipeFormDisplayed,
-      recipeBeingEdited: {
-        name: '',
-        steps: ''
-      },
-      recipes: this.state.recipes
+    this.setState((prevState) => {
+      let newState = {
+        isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
+        recipeBeingEdited: {
+          name: '',
+          steps: ''
+        },
+        recipes: prevState.recipes
+      }
+
+      return newState
     })
   }
 
   submitRecipe = (event) => {
     event.preventDefault();
-    console.log("submission is occurring: ", event)
-    console.log("submitRecipe recipes state: ", this.state)
-    this.setState({
-      isAddRecipeFormDisplayed: this.state.isAddRecipeFormDisplayed,
-      recipeBeingEdited: this.state.recipeBeingEdited,
-      recipes: this.state.recipes.push(this.state.recipeBeingEdited)
+    this.setState((prevState) => {
+      let newState = {
+        isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
+        recipeBeingEdited: prevState.recipeBeingEdited,
+        recipes: prevState.recipes.concat(prevState.recipeBeingEdited)
+      }
+      return newState
     })
-    console.log("afterRecipe recipes state: ", this.state)
-    this.toggleAddRecipeForm();
   }
 
   renderRecipes = () => {
-    console.log("renderRecipes recipes state: ", this.state)
     if (this.state.recipes.length === 0) {
       return <p>There are no recipes to list.</p>
     } else {
