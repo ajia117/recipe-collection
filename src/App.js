@@ -7,24 +7,21 @@ class App extends React.Component {
     super();
 
     this.state = {
-      isAddRecipeFormDisplayed: recipeState,
-      recipeBeingEdited: {
-      },
+      addRecipe: recipeState,
+      recipeBeingEdited: {},
       recipes: []
     }
   }
 
-  toggleAddRecipeForm = () => {
-    this.setState((prevState) => {
-      let newState = {
-        isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
-        recipeBeingEdited: {
-        },
-        recipes: prevState.recipes
-      }
-
-      return newState
+  toggleAddRecipe = () => {
+    this.setState({
+      addRecipe: !this.state.addRecipe,
+      recipeBeingEdited: {}
     })
+  }
+
+  makeDeepCopy = (obj) => {
+    return JSON.parse(JSON.stringify(obj));
   }
 
   /**
@@ -34,10 +31,7 @@ class App extends React.Component {
    */
   handleChange = (event, stateObj) => {
     if(stateObj) {
-      let newStateObj = {}
-      for(let key in this.state[stateObj]) {
-        newStateObj[key] = this.state[stateObj][key];
-      }
+      let newStateObj = this.makeDeepCopy(this.state[stateObj])
       newStateObj[event.target.id] = event.target.value;
       this.setState({[stateObj]: newStateObj});
     }
@@ -48,27 +42,19 @@ class App extends React.Component {
 
   submitRecipe = (event) => {
     event.preventDefault();
-    this.setState((prevState) => {
-      let newState = {
-        isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
-        recipeBeingEdited: prevState.recipeBeingEdited,
-        recipes: prevState.recipes
-      }
-      newState.recipeBeingEdited.viewInstructions = 'none';
-      newState.recipes = newState.recipes.concat(newState.recipeBeingEdited)
-      return newState
-    })
+
+    let newState = this.makeDeepCopy(this.state);
+    newState.recipeBeingEdited.isVisible = false;
+    newState.recipes.push(newState.recipeBeingEdited);
+
+    this.setState(newState);
+    this.toggleAddRecipe();
   }
 
   toggleInstructions = (index) => {
-    console.log("title clicked: ", index)
     this.setState((state) => {
-      let newRecipes = JSON.parse(JSON.stringify(state.recipes));
-      if(newRecipes[index].viewInstructions === 'block') {
-        newRecipes[index].viewInstructions = 'none';
-      } else {
-        newRecipes[index].viewInstructions = 'block';
-      }
+      let newRecipes = this.makeDeepCopy(state.recipes);
+      newRecipes[index].isVisible = !newRecipes[index].isVisible;
       return {recipes: newRecipes};
     })
   }
@@ -80,13 +66,13 @@ class App extends React.Component {
       return (
         <ul>
             {
-            this.state.recipes.map(({ newRecipeName, newRecipeInstructions, viewInstructions }, index) => (
+            this.state.recipes.map(({ newRecipeName, newRecipeInstructions, isVisible }, index) => (
               <li key={index}>
                 <h2 onClick={() => this.toggleInstructions(index)}>{newRecipeName}</h2>
-                <p style={{display: viewInstructions}}>{newRecipeInstructions}</p>
+                <p style={{display: (isVisible ? 'block' : 'none')}}>{newRecipeInstructions}</p>
               </li>
             ))
-          }
+            }
         </ul>
       )
     }
@@ -121,9 +107,9 @@ class App extends React.Component {
       <div className="App">
         <h1 className="App-header">My Recipes</h1>
         {
-          this.state.isAddRecipeFormDisplayed
+          this.state.addRecipe
             ? addNewRecipeForm
-            : <button id="add-recipe" onClick={this.toggleAddRecipeForm}>Add Recipe</button>
+            : <button id="add-recipe" onClick={this.toggleAddRecipe}>Add Recipe</button>
 
         }
         {
