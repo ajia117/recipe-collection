@@ -35,7 +35,28 @@ describe("Home page", () => {
   
     return cy.findByRole('button').click()
       .then(() => {
-      expect(cy.findByRole('listitem', /tofu scramble tacos/i)).toExist();
+        expect(cy.findByRole('listitem', /tofu scramble tacos/i)).toExist();
+      })
+  })
+
+  it("displays multiple recipes when added", () => {
+    const recipeName = 'Tofu Scramble Tacos';
+    cy.findByRole('button').click()
+    cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName)
+    cy.findByRole('textbox', {name: /instructions/i}).type("1. heat a skillet on medium with a dollop of coconut oil {enter} 2. warm flour tortillas")
+
+    return cy.findByRole('button').click()
+      .then(() => {
+        const recipeName = "Grandma's Ramen";
+        cy.findByRole('button').click()
+        cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName)
+        cy.findByRole('textbox', {name: /instructions/i}).type("1. Open Shin Ramen \n2. Pour package")
+
+        return cy.findByRole('button').click()
+          .then(() => {
+            expect(cy.get('ul').findByText("Tofu Scramble Tacos")).toExist();
+            expect(cy.get('ul').findByText("Grandma's Ramen")).toExist();
+          })
       })
   })
 })

@@ -27,5 +27,6 @@ test('Submitting new recipe will render it on home page', () => {
 
   userEvent.click(screen.getByTestId("submit"))
 
+  expect(screen.getByRole('listitem')).toBeInTheDocument();
   expect(screen.getByText("Grandma's ramen")).toBeInTheDocument();
 })

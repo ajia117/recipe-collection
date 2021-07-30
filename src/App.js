@@ -9,8 +9,6 @@ class App extends React.Component {
     this.state = {
       isAddRecipeFormDisplayed: recipeState,
       recipeBeingEdited: {
-        name: '',
-        steps: ''
       },
       recipes: []
     }
@@ -21,14 +19,31 @@ class App extends React.Component {
       let newState = {
         isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
         recipeBeingEdited: {
-          name: '',
-          steps: ''
         },
         recipes: prevState.recipes
       }
 
       return newState
     })
+  }
+
+  /**
+   * 
+   * @param {*} event Event object
+   * @param {*} stateObj string representing name of obj inside state to store
+   */
+  handleChange = (event, stateObj) => {
+    if(stateObj) {
+      let newStateObj = {}
+      for(let key in this.state[stateObj]) {
+        newStateObj[key] = this.state[stateObj][key];
+      }
+      newStateObj[event.target.id] = event.target.value;
+      this.setState({[stateObj]: newStateObj});
+    }
+    else {
+      this.setState({[event.target.id]: event.target.value})
+    }
   }
 
   submitRecipe = (event) => {
@@ -50,10 +65,10 @@ class App extends React.Component {
       return (
         <ul>
           {
-            this.state.recipes.map(({ name, steps }) => (
-              <li key={name}>
-                <h2>{name}</h2>
-                <p>{steps}</p>
+            this.state.recipes.map(({ newRecipeName, newRecipeInstructions }) => (
+              <li key={newRecipeName}>
+                <h2>{newRecipeName}</h2>
+                <p>{newRecipeInstructions}</p>
               </li>
             ))
           }
@@ -70,25 +85,19 @@ class App extends React.Component {
           type="text"
           data-testid="newRecipeName"
           id="newRecipeName"
-          value={this.state.recipeBeingEdited.name}
+          value={this.state.recipeBeingEdited.newRecipeName}
           onChange={
-            (event) => this.setState((state) => {
-              state.recipeBeingEdited.name = event.target.value;
-              return state;
-            })
-          } />
+            (event) => this.handleChange(event, "recipeBeingEdited")
+          }/>
         <label htmlFor="newRecipeInstructions">Instructions:</label>
         <textarea
           id="newRecipeInstructions"
           data-testid="newRecipeInstructions"
           placeholder="write recipe instructions here..."
-          value={this.state.recipeBeingEdited.steps}
+          value={this.state.recipeBeingEdited.newRecipeInstructions}
           onChange={
-            (event) => this.setState((state) => {
-              state.recipeBeingEdited.steps = event.target.value;
-              return state;
-            })
-          } />
+            (event) => this.handleChange(event, "recipeBeingEdited")
+          }/>
         <input type="submit" id="submit" data-testid="submit" />
       </form>
     )
