@@ -45,18 +45,49 @@ describe("Home page", () => {
     cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName)
     cy.findByRole('textbox', {name: /instructions/i}).type("1. heat a skillet on medium with a dollop of coconut oil {enter} 2. warm flour tortillas")
 
+    cy.findByRole('button').click()
+
+    let recipeName2 = "Grandma's Ramen";
+    cy.findByRole('button').click()
+    cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName2)
+    cy.findByRole('textbox', {name: /instructions/i}).type("1. Open Shin Ramen \n2. Pour package")
+
     return cy.findByRole('button').click()
       .then(() => {
-        const recipeName = "Grandma's Ramen";
-        cy.findByRole('button').click()
-        cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName)
-        cy.findByRole('textbox', {name: /instructions/i}).type("1. Open Shin Ramen \n2. Pour package")
-
-        return cy.findByRole('button').click()
-          .then(() => {
-            expect(cy.get('ul').findByText("Tofu Scramble Tacos")).toExist();
-            expect(cy.get('ul').findByText("Grandma's Ramen")).toExist();
-          })
+        expect(cy.get('ul').findByText("Tofu Scramble Tacos")).toExist();
+        expect(cy.get('ul').findByText("Grandma's Ramen")).toExist();
       })
+  })
+})
+
+describe("Home Page Stretch", () => {
+  beforeEach(() => {
+
+    cy.visit('/')
+    const recipeName = 'Tofu Scramble Tacos';
+    cy.findByRole('button').click()
+    cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName)
+    cy.findByRole('textbox', {name: /instructions/i}).type("1. heat a skillet on medium with a dollop of coconut oil {enter} 2. warm flour tortillas")
+
+    cy.findByRole('button').click()
+
+    let recipeName2 = "Grandma's Ramen";
+    cy.findByRole('button').click()
+    cy.findByRole('textbox', {name: /Recipe name/i}).type(recipeName2)
+    cy.findByRole('textbox', {name: /instructions/i}).type("1. Open Shin Ramen \n2. Pour package")
+
+    cy.findByRole('button').click()
+  })
+
+  it("displays only titles", () => {
+    expect(cy.get('ul').findByText("Tofu Scramble Tacos")).toExist();
+    expect(cy.get('ul').find('p').should('have.css', 'display', 'none')).toBeTruthy();
+    expect(cy.get('ul').findByText("Grandma's Ramen")).toExist();
+  })
+
+  it("displays instructions on title click", () => {
+    cy.get('ul').find('h2').click({multiple: true})
+    expect(cy.get('ul').find('p').should('have.css', 'display', 'block')).toBeTruthy();
+    expect(cy.get('ul').find('p').should('have.css', 'display', 'block')).toBeTruthy();
   })
 })

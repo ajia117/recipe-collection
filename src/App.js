@@ -52,9 +52,24 @@ class App extends React.Component {
       let newState = {
         isAddRecipeFormDisplayed: !prevState.isAddRecipeFormDisplayed,
         recipeBeingEdited: prevState.recipeBeingEdited,
-        recipes: prevState.recipes.concat(prevState.recipeBeingEdited)
+        recipes: prevState.recipes
       }
+      newState.recipeBeingEdited.viewInstructions = 'none';
+      newState.recipes = newState.recipes.concat(newState.recipeBeingEdited)
       return newState
+    })
+  }
+
+  toggleInstructions = (index) => {
+    console.log("title clicked: ", index)
+    this.setState((state) => {
+      let newRecipes = JSON.parse(JSON.stringify(state.recipes));
+      if(newRecipes[index].viewInstructions === 'block') {
+        newRecipes[index].viewInstructions = 'none';
+      } else {
+        newRecipes[index].viewInstructions = 'block';
+      }
+      return {recipes: newRecipes};
     })
   }
 
@@ -64,11 +79,11 @@ class App extends React.Component {
     } else {
       return (
         <ul>
-          {
-            this.state.recipes.map(({ newRecipeName, newRecipeInstructions }) => (
-              <li key={newRecipeName}>
-                <h2>{newRecipeName}</h2>
-                <p>{newRecipeInstructions}</p>
+            {
+            this.state.recipes.map(({ newRecipeName, newRecipeInstructions, viewInstructions }, index) => (
+              <li key={index}>
+                <h2 onClick={() => this.toggleInstructions(index)}>{newRecipeName}</h2>
+                <p style={{display: viewInstructions}}>{newRecipeInstructions}</p>
               </li>
             ))
           }
